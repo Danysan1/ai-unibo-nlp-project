@@ -1,5 +1,6 @@
 *.dp
 *.tsv
+*.zip
 
 # Created by https://www.toptal.com/developers/gitignore/api/jupyternotebooks,python,visualstudiocode,data
 # Edit at https://www.toptal.com/developers/gitignore?templates=jupyternotebooks,python,visualstudiocode,data
