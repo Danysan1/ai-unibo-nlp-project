@@ -2,7 +2,7 @@
 *.tsv
 *.zip
 */Dataset/
-*.tfevents.*
+events.out.tfevents.*
 
 # Created by https://www.toptal.com/developers/gitignore/api/jupyternotebooks,python,visualstudiocode,data
 # Edit at https://www.toptal.com/developers/gitignore?templates=jupyternotebooks,python,visualstudiocode,data
