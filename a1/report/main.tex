@@ -1,0 +1,231 @@
+% This must be in the first 5 lines to tell arXiv to use pdfLaTeX, which is strongly recommended.
+\pdfoutput=1
+% In particular, the hyperref package requires pdfLaTeX in order to break URLs across lines.
+
+\documentclass[11pt]{article}
+
+% Remove the "guidelines" option to generate the final version.
+\usepackage[guidelines]{nlpreport} % show guidelines
+%\usepackage[]{nlpreport} % hide guidelines
+
+
+% Standard package includes
+\usepackage{times}
+\usepackage{latexsym}
+
+% For proper rendering and hyphenation of words containing Latin characters (including in bib files)
+\usepackage[T1]{fontenc}
+% For Vietnamese characters
+% \usepackage[T5]{fontenc}
+% See https://www.latex-project.org/help/documentation/encguide.pdf for other character sets
+
+% This assumes your files are encoded as UTF8
+\usepackage[utf8]{inputenc}
+
+% This is not strictly necessary, and may be commented out,
+% but it will improve the layout of the manuscript,
+% and will typically save some space.
+\usepackage{microtype}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{mathtools}
+\usepackage{multirow}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{booktabs} % for tables
+
+
+
+
+
+
+% THE pdfinfo Title AND Author ARE NOT NECESSARY, THEY ARE METADATA FOR THE FINAL PDF FILE
+\hypersetup{pdfinfo={
+Title={Assignment 1},
+Author={
+    Daniel Bernardi,
+    Daniele Santini,
+    Hiari Pizzini Cavagna
+    \&
+    Muhammad Saleem Ghulam
+}
+}}
+%\setcounter{secnumdepth}{0}  
+ \begin{document}
+%
+\title{Assignment 1\\
+\explanation{\rm Substitute the $\uparrow$ title $\uparrow$ with your project's title, or with Assignment 1 / 2\\ \smallskip}
+% subtitle:
+\large \explanation{\rm $\downarrow$ Keep only one of the following three  labels  / leave empty for assignments: $\downarrow$\\}
+NLP Course Project
+}
+\author{
+    Daniel Bernardi,
+    Daniele Santini,
+    Hiari Pizzini Cavagna
+    \and
+    Muhammad Saleem Ghulam\\
+Master's Degree in Artificial Intelligence, University of Bologna\\
+\{ daniel.bernardi, daniele.santini2, hiari.pizzinicavagna, muhammad.ghulam \}@studio.unibo.it
+}
+\maketitle
+
+
+\attention{DO NOT MODIFY THIS TEMPLATE - EXCEPT, OF COURSE FOR TITLE, SUBTITLE AND AUTHORS.\\ IN THE FINAL VERSION, IN THE \LaTeX\ SOURCE REMOVE THE \texttt{guidelines} OPTION FROM  \texttt{$\backslash$usepackage[guidelines]\{nlpreport\}}.
+}
+
+\begin{abstract}
+%\begin{quote}
+
+\explanation{
+The abstract is very brief summary of your report. Try to keep it no longer than 15-20 lines at most. Write your objective, your approach, and your main observations (what are the findings that make this report worthwhile reading?)}
+
+Comparative analysis of Neural-Network based implementations of Named Entity Recognition.
+
+%\end{quote}
+\end{abstract}
+
+\attention{\textcolor{red}{NOTICE: THIS REPORT'S LENGTH MUST RESPECT THE FOLLOWING PAGE LIMITS: \begin{itemize}
+    \item ASSIGNMENT: \textbf{2 PAGES} 
+    \item NLP PROJECT OR PROJECT WORK: \textbf{8 PAGES}
+    \item COMBINED NLP PROJECT + PW: \textbf{12 PAGES}
+\end{itemize}  PLUS LINKS, REFERENCES AND APPENDICES.\\ 
+THIS MEANS THAT YOU CANNOT FILL ALL SECTIONS TO MAXIMUM LENGTH. IT ALSO MEANS THAT, QUITE POSSIBLY, YOU WILL HAVE TO LEAVE OUT OF THE REPORT PART OF THE WORK YOU HAVE DONE OR OBSERVATIONS YOU HAVE. THIS IS NORMAL: THE REPORT SHOULD EMPHASIZE WHAT IS MOST SIGNIFICANT, NOTEWORTHY, AND REFER TO THE NOTEBOOK FOR ANYTHING ELSE.\\ 
+FOR ANY OTHER ASPECT OF YOUR WORK THAT YOU WOULD LIKE TO EMPHASIZE BUT CANNOT EXPLAIN HERE FOR LACK OF SPACE, FEEL FREE TO ADD COMMENTS IN THE NOTEBOOK.\\ 
+INTERESTING TEXT EXAMPLES THAT EXCEED THE MAXIMUM LENGTH OF THE REPORT CAN BE PLACED IN A DEDICATED APPENDIX AFTER THE REFERENCES.}}
+
+
+\section{Introduction}
+\label{sec:introduction}
+\attention{MAX 1 COLUMN FOR ASSIGNMENT REPORTS / 2 COLUMNS FOR PROJECT OR PW / 3 FOR COMBINED REPORTS.}
+
+\explanation{
+The Introduction is an executive summary, which you can think of as an extended abstract.  Start by writing a brief description of the problem you are tackling and why it is important. (Skip it if this is an assignment report).} 
+
+\explanation{Then give a short overview of known/standard/possible approaches to that problems, if any, and what are their advantages/limitations.} 
+
+\explanation{After that, discuss your approach, and motivate why you follow that approach. If you are drawing inspiration from an existing model, study, paper, textbook example, challenge, \dots, be sure to add all the necessary references~\cite{DBLP:journals/corr/abs-2204-02311,DBLP:conf/acl/LorenzoMN22,DBLP:conf/clef/AnticiBIIGR21,DBLP:conf/ijcai/NakovCHAEBPSM21,DBLP:conf/naacl/RottgerVHP22,DBLP:journals/toit/LippiT16}.\footnote{\href{https://en.wikipedia.org/wiki/The_Muppet_Show}{Add only what is relevant.}}}
+
+\explanation{Next, give a brief summary of your experimental setup: how many experiments did you run on which dataset. Last, make a list of the main results or take-home lessons from your work.}
+
+\attention{HERE AND EVERYWHERE ELSE: ALWAYS KEEP IN MIND THAT, CRUCIALLY, WHATEVER TEXT/CODE/FIGURES/IDEAS/... YOU TAKE FROM ELSEWHERE MUST BE CLEARLY IDENTIFIED AND PROPERLY REFERENCED IN THE REPORT.}
+
+The
+
+\section{Background}
+\label{sec:background}
+\attention{MAX 2 COLUMNS (3 FOR COMBINED REPORTS). DO NOT INCLUDE SECTION IF NO BACKGROUND NECESSARY. OMIT SECTION IN ASSIGNMENT REPORTS.}
+
+\explanation{The Background section is where you briefly provide whatever background information on the domain or challenge you're addressing and/or on the techniques/approaches you're using, that (1) you think is necessary for the reader to understand your work and design choices, and (2) is not something that has been explained to you during the NLP course (to be clear: do NOT repeat explanations of things seen in class, we already know that stuff). If you adapt paragraphs from articles, books, online resources, etc: be sure to clarify which parts are yours and which ones aren't.}
+
+\section{System description}
+\label{sec:system}
+\attention{MAX 1 COLUMN FOR ASSIGNMENT REPORTS / 4 COLUMNS FOR PROJECT OR PW / 6 FOR COMBINED REPORTS.}
+
+\explanation{
+Describe the system or systems you have implemented (architectures, pipelines, etc), and used to run your experiments. If you reuse parts of code written by others, be sure to make very clear your original contribution in terms of
+\begin{itemize}
+    \item architecture: is the architecture your design or did you take it from somewhere else
+    \item coding: which parts of code are original or heavily adapted? adapted from existing sources? taken from external sources with minimal adaptations?
+\end{itemize}
+It is a good idea to add figures to illustrate your pipeline and/or architecture(s)
+(see Figure~\ref{fig:architecture})
+%
+\begin{figure*}
+    \centering
+    \includegraphics[width=\textwidth]{img/architecture.pdf}
+    \caption{Model architecture}
+    \label{fig:architecture}
+\end{figure*}
+}
+
+\begin{figure*}
+    \centering
+    \includegraphics[width=\textwidth]{base_model.png}
+    \caption{Model architecture}
+    \label{fig:base_architecture}
+\end{figure*}
+\begin{figure*}
+    \centering
+    \includegraphics[width=\textwidth]{gru_model.png}
+    \caption{Model architecture}
+    \label{fig:gru_architecture}
+\end{figure*}
+\begin{figure*}
+    \centering
+    \includegraphics[width=\textwidth]{x2lstm_model.png}
+    \caption{Model architecture}
+    \label{fig:x2lstm_architecture}
+\end{figure*}
+\begin{figure*}
+    \centering
+    \includegraphics[width=\textwidth]{lstm_dense_model.png}
+    \caption{Model architecture}
+    \label{fig:lstm_dense_architecture}
+\end{figure*}
+
+\section{Data}
+\label{sec:data}
+\attention{MAX 2 COLUMNS / 3 FOR COMBINED REPORTS. OMIT SECTION IN ASSIGNMENT REPORTS.}
+
+\explanation{Provide a brief description of your data including some statistics and pointers (references to articles/URLs) to be used to obtain the data. Describe any pre-processing work you did. Links to datasets must be placed later in Section~\ref{sec:links}.}
+
+\section{Experimental setup and results}
+\label{sec:results}
+\attention{MAX 1 COLUMN FOR ASSIGNMENT REPORTS / 3 COLUMNS FOR PROJECT OR PW / 5 FOR COMBINED REPORTS.}
+
+\explanation{
+Describe how you set up your experiments: which architectures/configurations you used, which hyper-parameters and what methods used to set them, which optimizers, metrics, etc.
+\\
+Then, \textbf{use tables} to summarize your your findings (numerical results) in validation and test. If you don't have experience with tables in \LaTeX, you might want to use \href{https://www.tablesgenerator.com/}{\LaTeX table generator} to quickly create a table template.
+}
+
+
+\section{Discussion}
+\label{sec:discussion}
+\attention{MAX 1.5 COLUMNS FOR ASSIGNMENT REPORTS / 3 COLUMNS FOR PROJECT / 4 FOR COMBINED REPORTS. ADDITIONAL EXAMPLES COULD BE PLACED IN AN APPENDIX AFTER THE REFERENCES IF THEY DO NOT FIT HERE.}
+
+
+\explanation{
+Here you should make your analysis of the results you obtained in your experiments. Your discussion should be structured in two parts: 
+\begin{itemize}
+    \item discussion of quantitative results (based on the metrics you have identified earlier; compare with baselines);
+    \item error analysis: show some examples of odd/wrong/unwanted  outputs; reason about why you are getting those results, elaborate on what could/should be changed in future developments of this work.
+\end{itemize}
+}
+
+
+
+\section{Conclusion}
+\label{sec:conclusion}
+\attention{MAX 1 COLUMN.}
+
+\explanation{
+In one or two paragraphs, recap your work and main results.
+What did you observe? 
+Did all go according to expectations? 
+Was there anything surprising or worthwhile mentioning?
+After that, discuss the main limitations of the solution you have implemented, and indicate promising directions for future improvement.
+}
+
+
+
+\section{Links to external resources}
+\label{sec:links}
+\attention{THIS SECTION IS OPTIONAL}
+\explanation{
+Insert here:
+\begin{itemize}
+    \item a link to your GitHub or any other public repo where one can find your code (only if you did not submit your code on Virtuale); 
+    \item a link to your dataset (only for non-standard projects or project works).
+\end{itemize}
+}
+
+\attention{DO NOT INSERT CODE IN THIS REPORT}
+
+
+
+
+\bibliography{nlpreport.bib}
+\end{document}
