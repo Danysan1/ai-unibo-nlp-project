@@ -5,8 +5,8 @@
 \documentclass[11pt]{article}
 
 % Remove the "guidelines" option to generate the final version.
-\usepackage[guidelines]{nlpreport} % show guidelines
-%\usepackage[]{nlpreport} % hide guidelines
+%\usepackage[guidelines]{nlpreport} % show guidelines
+\usepackage[]{nlpreport} % hide guidelines
 
 
 % Standard package includes
@@ -36,7 +36,7 @@
 \usepackage{booktabs} % for tables
 
 
-
+\usepackage{subfigure}
 
 
 
@@ -81,7 +81,7 @@ Master's Degree in Artificial Intelligence, University of Bologna\\
 \explanation{
 The abstract is very brief summary of your report. Try to keep it no longer than 15-20 lines at most. Write your objective, your approach, and your main observations (what are the findings that make this report worthwhile reading?)}
 
-Comparative analysis of Neural-Network based implementations of Named Entity Recognition.
+Comparative analysis of Neural-Network based implementations of sequence labeling: combining Dense, LSTM and GRU architectures for Part-Of-Speech tagging.
 
 %\end{quote}
 \end{abstract}
@@ -111,10 +111,22 @@ The Introduction is an executive summary, which you can think of as an extended 
 
 \attention{HERE AND EVERYWHERE ELSE: ALWAYS KEEP IN MIND THAT, CRUCIALLY, WHATEVER TEXT/CODE/FIGURES/IDEAS/... YOU TAKE FROM ELSEWHERE MUST BE CLEARLY IDENTIFIED AND PROPERLY REFERENCED IN THE REPORT.}
 
-The
+The goal of this assignment was to perform Part-Of-Speech tagging using neural architectures on the Dependency Treebanks corpus from NLTK.
 
+The necessary tasks included the download, pre-processing, and analysis of the corpus, the dense embedding of the words in the corpora and the comparation of the results of four Neural Network architectures choosen ahead of time:
+\begin{itemize}
+    \item single Bidirectional LSTM layer + single Dense layer (baseline)
+    \item single Bidirectional GRU layer + single Dense layer
+    \item double Bidirectional LSTM layer + single Dense layer
+    \item single Bidirectional LSTM layer + double Dense layer
+\end{itemize}
+
+The intended evaluation metric on the test set is F1-Macro, without considering punctuation classes. 
+
+\explanation{
 \section{Background}
 \label{sec:background}
+}
 \attention{MAX 2 COLUMNS (3 FOR COMBINED REPORTS). DO NOT INCLUDE SECTION IF NO BACKGROUND NECESSARY. OMIT SECTION IN ASSIGNMENT REPORTS.}
 
 \explanation{The Background section is where you briefly provide whatever background information on the domain or challenge you're addressing and/or on the techniques/approaches you're using, that (1) you think is necessary for the reader to understand your work and design choices, and (2) is not something that has been explained to you during the NLP course (to be clear: do NOT repeat explanations of things seen in class, we already know that stuff). If you adapt paragraphs from articles, books, online resources, etc: be sure to clarify which parts are yours and which ones aren't.}
@@ -140,36 +152,57 @@ It is a good idea to add figures to illustrate your pipeline and/or architecture
 \end{figure*}
 }
 
-\begin{figure*}
-    \centering
-    \includegraphics[width=\textwidth]{base_model.png}
-    \caption{Model architecture}
-    \label{fig:base_architecture}
-\end{figure*}
-\begin{figure*}
-    \centering
-    \includegraphics[width=\textwidth]{gru_model.png}
-    \caption{Model architecture}
-    \label{fig:gru_architecture}
-\end{figure*}
-\begin{figure*}
-    \centering
-    \includegraphics[width=\textwidth]{x2lstm_model.png}
-    \caption{Model architecture}
-    \label{fig:x2lstm_architecture}
-\end{figure*}
-\begin{figure*}
-    \centering
-    \includegraphics[width=\textwidth]{lstm_dense_model.png}
-    \caption{Model architecture}
-    \label{fig:lstm_dense_architecture}
-\end{figure*}
+The corpus download is implemented in plain Python.
+Since the corpus files are numbered and the train-val-test split is done before the data loading by selecting a range of files, we have implemented a function (called loadCorpus) which takes in input the range of files to open and loads these as a Pandas DataFrame.
+
+The Exploratory Data Analysis is implemented using Pandas and Matplotlib.
+We pre-processed the data using Pandas (in particular, we implemented the function cleanCorpus to remove the punctuation classes).
+
+As per instructions, the word embedding was done using the GloVe dense embedding \cite{pennington-etal-2014-glove}.
+This was implemented using the glove-wiki-gigaword-200 embedding model from the gensim library \cite{rehurek_lrec} and using it inside a Tokenizer layer that was used ase the first layer in our Tensorflow neural network.
+The Out-Of-Vocabulary words were handled by adding a random embedding vector to the embedding matrix.
+
+Using Python, Numpy and Tensorflow interfaces we made sure to make our code reproducible, then we proceeded to implement the four neural network architectures with Tensorflow.
+%For the model architectures, see Figure~\ref{fig:model_architecture}.
+
+% \begin{figure*}
+%     \centering
+%     %\subfigure[]{\includegraphics[width=\columnwidth]{base_model.png}}
+%     \subfigure[]{\includegraphics[width=0.32\textwidth]{gru_model.png}}
+%     \subfigure[]{\includegraphics[width=0.32\textwidth]{x2lstm_model.png}}
+%     \subfigure[]{\includegraphics[width=0.32\textwidth]{lstm_dense_model.png}}
+%     \caption{Model architectures: (a) LSTM (b) GRU (c) 2xLSTM (d) LSTM+Dense}
+%     \label{fig:model_architecture}
+% \end{figure*}
 
 \section{Data}
 \label{sec:data}
 \attention{MAX 2 COLUMNS / 3 FOR COMBINED REPORTS. OMIT SECTION IN ASSIGNMENT REPORTS.}
 
 \explanation{Provide a brief description of your data including some statistics and pointers (references to articles/URLs) to be used to obtain the data. Describe any pre-processing work you did. Links to datasets must be placed later in Section~\ref{sec:links}.}
+
+The corpus contained training, validation and test data.
+As mentioned above, it was divided in 200 numbered files and the train-val-test split is done before the data loading by selecting a range of files.
+
+Based on the information available on punctuation\textsuperscript{~\ref{sec:links}}, we have identified these punctuation classes: \verb|``|,  \verb|’’|,  \verb|-LRB-|,  \verb|-RRB-|, 
+ \verb|,|,  \verb|.|,  \verb|:|,  \verb|HYPH|,  \verb|\#|,  \verb|\$|, 
+ \verb|SYM|,  \verb|''|.
+%The distribution of these classes among all classes can be observed in Figure~\ref{fig:classes_with_punct}
+The distribution of these classes among all classes can be observed in the Python notebook.
+
+\begin{table*}[!t]
+\begin{tabular}{l|l|l|l|l|l|l|l}
+\multicolumn{1}{c|}{\textbf{Architecture}} & \textbf{Units} & \textbf{Dropout} & \textbf{Activation} & \textbf{LR} & \textbf{Epochs} & \textbf{Acc.} & \multicolumn{1}{c}{\textbf{F1 Val.}} \\ \hline
+Bi-LSTM + Dense		& 32		& 0		& tanh		& 28e-4	& 6		& 0.882	& 0.714	\\
+Bi-GRU + Dense		& 112		& 0.05	& tanh		& 60e-5	& 17	& 0.891	& 0.701	\\
+Two Bi-LSTM + Dense	&			&		& tanh		&		&		&		&		\\
+Bi-LSTM + Two Dense	& 112+46	& 0		& tanh+relu	& 12e-4	& 9		& 0.888	& 0.709
+\end{tabular}
+\caption{Results obtained using Keras Tuner for every different architecture}
+\label{table:tuner}
+\end{table*}
+
+
 
 \section{Experimental setup and results}
 \label{sec:results}
@@ -181,6 +214,21 @@ Describe how you set up your experiments: which architectures/configurations you
 Then, \textbf{use tables} to summarize your your findings (numerical results) in validation and test. If you don't have experience with tables in \LaTeX, you might want to use \href{https://www.tablesgenerator.com/}{\LaTeX table generator} to quickly create a table template.
 }
 
+We first experimented manually tuning the hyper-parameters for these four models.
+
+Then we calibrated the configurations for the four different architectures using 
+Keras Tuner\textsuperscript{~\ref{sec:links}}. The hyper-parameters considered and their range (min, max) were: the number of units (16, 256), the activation functions (relu, tanh), dropout (0, 0.2) and learning rate (1e-4, 1e-2), with Adam as optimizer. 
+The chosen tuner algorithm was Hyperband \cite{arxiv.1603.06560}, that allows to quickly converge on a high-performing model, comparing possible combinations through a "championship style" bracket. The algorithm used accuracy to determine the best model, training at most for 30 epochs, using the Early Stopping callback with a min. value of 15e-4 to increase the performances. 
+In Table \ref{table:tuner} the results obtained and the F1-score calculated are showned. The F1-score is macro-averaged, calculated excluding all the punctuation classes.  
+In the end, the F1-score on the test set has been calculated, both best models had a better score compared with the validation score. 
+
+\begin{table}[!h]
+\begin{tabular}{l|l|l}
+\multicolumn{1}{c|}{\textbf{Model}}       & \textbf{F1 Val.} & \multicolumn{1}{c}{\textbf{F1 Test}} \\ \hline
+Bi-LSTM + Dense     & 0.714            & 0.793                                \\
+Bi-LSTM + 2 Dense   & 0.709            & 0.783                               
+\end{tabular}
+\end{table}
 
 \section{Discussion}
 \label{sec:discussion}
@@ -195,7 +243,13 @@ Here you should make your analysis of the results you obtained in your experimen
 \end{itemize}
 }
 
+All the models ended up with a F1-score result on the test set around 0.8, good but not perfect.
 
+Since Gated Recurrent Units are less complex than Long Short Term Memory units we weren't surprised to see that the GRU model didn't outperform the baseline LSTM model.
+
+During the initial manual hyper-parameter tuning phase among the observed behaviors of the four models we noticed that the last model is particularly susceptible to over-training. This problem was addressed and solved (by using dropout and early stopping), as can be verified analyzing the behavior of the training.
+
+As we expected the best performing architectures were the last two, however they didn't substantially outperform the baseline, even after tuning the hyper-parameters with Keras Tuner.
 
 \section{Conclusion}
 \label{sec:conclusion}
@@ -209,7 +263,7 @@ Was there anything surprising or worthwhile mentioning?
 After that, discuss the main limitations of the solution you have implemented, and indicate promising directions for future improvement.
 }
 
-
+Since this problem relies heavily on identifying the relationship between the elements in the string, a possible way to improve the output would be to use attention-based architectures, such as transformer-derived techniques like BERT. Recurrent architectures like LSTM and GRU are partially able to learn these patterns but attention based architectures are precisely designed to esploit these relationships.
 
 \section{Links to external resources}
 \label{sec:links}
@@ -222,10 +276,27 @@ Insert here:
 \end{itemize}
 }
 
+\begin{itemize}
+    \item \href{https://raw.githubusercontent.com/nltk/nltk_data/gh-pages/packages/corpora/dependency_treebank.zip}{Corpus}
+    \item \href{https://en.wikipedia.org/wiki/English_punctuation}{English punctuation on Wikipedia}
+    \item \href{https://universaldependencies.org/docs/en/pos/all.html#al-en-pos/PUNCT}{PUNCT POS tags on Universal Dependencies}
+    \item \href{https://radimrehurek.com/gensim/auto_examples/index.html}{gensim library docs}
+    \item \href{https://keras.io/api/keras_tuner/}{KerasTuner API - Keras}
+    \item \href{https://www.tensorflow.org/tutorials/keras/keras_tuner}{Keras Tuner - Tensorflow}
+    \item \href{https://github.com/Danysan1/ai-unibo-nlp-project}{Our GitHub repository}
+\end{itemize}
 \attention{DO NOT INSERT CODE IN THIS REPORT}
 
 
 
+%\bibliography{nlpreport.bib}
+\bibliography{nlpreport, main}
 
-\bibliography{nlpreport.bib}
+% \begin{figure*}
+%     \centering
+%     \includegraphics[width=\textwidth]{classes_with_punctuation.png}
+%     \caption{Class distribution (including punctuation classes)}
+%     \label{fig:classes_with_punct}
+% \end{figure*}
+
 \end{document}
