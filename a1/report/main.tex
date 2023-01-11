@@ -38,6 +38,7 @@
 \usepackage{booktabs} % for tables
 
 
+\usepackage{enumitem}
 \usepackage{subfigure}
 
 
@@ -113,15 +114,9 @@ The Introduction is an executive summary, which you can think of as an extended 
 
 \attention{HERE AND EVERYWHERE ELSE: ALWAYS KEEP IN MIND THAT, CRUCIALLY, WHATEVER TEXT/CODE/FIGURES/IDEAS/... YOU TAKE FROM ELSEWHERE MUST BE CLEARLY IDENTIFIED AND PROPERLY REFERENCED IN THE REPORT.}
 
-The goal of this assignment was to perform Part-Of-Speech tagging using neural architectures on the Dependency Treebanks corpus from NLTK.
+The goal of this assignment was to perform POS tagging using neural architectures on the Dependency Treebanks corpus from NLTK.
 
-The necessary tasks included the download, pre-processing, and analysis of the corpus, the dense embedding of the words in the corpora and the comparation of the results of four Neural Network architectures choosen ahead of time:
-\begin{itemize}
-    \item Bidirectional LSTM layer + Dense layer (baseline)
-    \item Bidirectional GRU layer + Dense layer
-    \item 2x Bidirectional LSTM layer + 1x Dense layer
-    \item 1x Bidirectional LSTM layer + 2x Dense layer
-\end{itemize}
+The necessary tasks included the download, pre-processing, and analysis of the corpus, the dense embedding of the words in the corpora and the comparation of the results of four Neural Network architectures choosen ahead of time: starting from baseline with a LSTM and a Dense layer, then experimenting using a GRU instead of the LSTM, an additional LSTM and an additional dense layer.
 
 The intended evaluation metric on the test set is F1-Macro, without considering punctuation classes. 
 
@@ -155,14 +150,14 @@ It is a good idea to add figures to illustrate your pipeline and/or architecture
 }
 
 The corpus download is implemented in plain Python.
-Since the corpus files are numbered and the train-val-test split is done before the data loading by selecting a range of files, we have implemented a function (called loadCorpus) which takes in input the range of files to open and loads these as a Pandas DataFrame.
+Since the corpus files are numbered and the train-val-test split is done before the data loading by selecting a range of files, we have implemented a function (loadCorpus) which takes in input the range of files to open and loads these as a Pandas DataFrame.
 
-The Exploratory Data Analysis and data pre-processing are implemented using Pandas and Matplotlib.
+The exploratory data analysis and data pre-processing are implemented using Pandas and Matplotlib.
 %We pre-processed the data using Pandas (in particular, we implemented the function cleanCorpus to remove the punctuation classes).
 
 As per instructions, the word embedding was done using the GloVe dense embedding \cite{pennington-etal-2014-glove}.
-This was implemented using the glove-wiki-gigaword-200 embedding model\textsuperscript{~\ref{sec:links}} from the gensim library \cite{rehurek_lrec} and using it inside a Tokenizer layer that was used ase the first layer in our Tensorflow neural network.
-The Out-Of-Vocabulary words were handled by adding a random embedding vector to the embedding matrix.
+This was implemented using the glove-wiki-gigaword-200 embedding model\textsuperscript{~\ref{sec:links}} from the gensim library \cite{rehurek_lrec} and using it inside a Tokenizer layer that was used as the first layer in our Tensorflow neural network.
+The OOV words were handled by adding a random embedding vector to the embedding matrix.
 
 Using Python, Numpy and Tensorflow interfaces we made sure to make our code reproducible, then we proceeded to implement the four neural network architectures with Tensorflow.
 %For the model architectures, see Figure~\ref{fig:model_architecture}.
@@ -192,12 +187,14 @@ Based on the information available on punctuation\textsuperscript{~\ref{sec:link
 %The distribution of these classes among all classes can be observed in Figure~\ref{fig:classes_with_punct}
 The distribution of these classes among all classes can be observed in the Python notebook.
 
+Since the chosen embedding model is uncased\textsuperscript{~\ref{sec:links}}, all the text is transformed to lower-case before the embedding.
+
 \begin{table*}[!t]
 \begin{tabular}{l|l|l|l|l|l|l|l}
 \multicolumn{1}{c|}{\textbf{Architecture}} & \textbf{Units} & \textbf{Dropout} & \textbf{Activation} & \textbf{LR} & \textbf{Epochs} & \textbf{Acc.} & \multicolumn{1}{c}{\textbf{F1 Val.}} \\ \hline
-Bi-LSTM + Dense		& 32		& 0		& tanh		& 28e-4	& 9 	& 0.885	& 0.707	\\
-Bi-GRU + Dense		& 112		& 0.05	& tanh		& 64e-5	& 17	& 0.891	& 0.701	\\
-Two Bi-LSTM + Dense	& 128+112	& 0+0.2	& tanh+relu	& 14e-4	& 7		& 0.890	& 0.708	\\
+Bi-LSTM + Dense		& 32		& 0		& tanh		& 28e-4	& 6 	& 0.883	& 0.714	\\
+Bi-GRU + Dense		& 112		& 0.05	& tanh		& 64e-5	& 17	& 0.893	& 0.702	\\
+Two Bi-LSTM + Dense	& 128+112	& 0+0.2	& tanh+relu	& 14e-4	& 7		& 0.889	& 0.708	\\
 Bi-LSTM + Two Dense	& 112+64    & 0		& relu+tanh	& 12e-4	& 6		& 0.885	& 0.716
 \end{tabular}
 \caption{Results obtained using Keras Tuner for every different architecture}
@@ -218,8 +215,8 @@ Then, \textbf{use tables} to summarize your your findings (numerical results) in
 
 We first experimented manually tuning the hyper-parameters for these four models.
 
-Then we calibrated the configurations for the four different architectures using 
-Keras Tuner\textsuperscript{~\ref{sec:links}}. The hyper-parameters considered and their range (min, max) were: the number of units (16, 256), the activation functions (relu, tanh), dropout (0, 0.2) and learning rate (1e-4, 1e-2), with Adam as optimizer. 
+Then we fine-tuned the hyper-parameters using Keras Tuner\textsuperscript{~\ref{sec:links}}.
+The hyper-parameters considered were: the number of units, the activation functions, dropout and learning rate, with Adam as optimizer. 
 The chosen tuner algorithm was Hyperband \cite{arxiv.1603.06560}, that allows to quickly converge on a high-performing model, comparing possible combinations through a "championship style" bracket. The algorithm used accuracy to determine the best model, training at most for 30 epochs, using the Early Stopping callback with a min. value of 15e-4 to increase the performances. 
 The results obtained and the F1-score calculated are showed in the Table \ref{table:tuner}. The F1-score is macro-averaged, calculated excluding all the punctuation classes.  
 In the end, the F1-score on the test set has been calculated, both best models had a better score compared with the validation score. 
@@ -227,8 +224,8 @@ In the end, the F1-score on the test set has been calculated, both best models h
 \begin{table}[!h]
 \begin{tabular}{l|l|l}
 \multicolumn{1}{c|}{\textbf{Model}}       & \textbf{F1 Val.} & \multicolumn{1}{c}{\textbf{F1 Test}} \\ \hline
-2xBi-LSTM + Dense	& 0.708		& 0.782	\\
-Bi-LSTM + 2xDense	& 0.716		& 0.793
+Bi-LSTM + Dense	    & 0.714		& 0.792	\\
+Bi-LSTM + Two Dense	& 0.716		& 0.793
 \end{tabular}
 \end{table}
 
@@ -245,13 +242,17 @@ Here you should make your analysis of the results you obtained in your experimen
 \end{itemize}
 }
 
-All the models ended up with a F1-score result on the test set around 0.8, good but not perfect.
+Both the models ended up with a F1-score result on the test set around 0.8, good but not perfect. Our analysis revealed that two of the classes with most support, nouns (NN) and proper nouns (NNP), are often confused one with the other (e.g. 49.2\% of wrong NN predictions are labeled as NNP), possibly due to embedding issues. The total number of wrong prediction for those two classes sums up to almost 40\% of the errors.
 
-Since Gated Recurrent Units are less complex than Long Short Term Memory units we weren't surprised to see that the GRU model didn't outperform the baseline LSTM model.
+For both best models the F1-score was better than the F1-score on the validation set.
+We analyzed the datasets and discovered this was due to a different distribution of classes among the datasets: some worst-performing classes where absent from the test set.
 
-During the initial manual phase we started with a high number of units in the first Dense layer of the last model and noticed that it was particularly susceptible to over-fitting. This problem was addressed and solved by using dropout and early stopping. KerasTuner then demonstrated that a better result could be obtained simply reducing the number of units in the dense layer while keeping early stopping. The optimized hyper-parameters also changed the learning rate and the activation functions, which could have an impact.
+Since Gated Recurrent Units are less complex than Long Short Term Memory units we weren't surprised to see that the GRU model didn't outperform the baseline LSTM model, requiring 3 times additional units to get near the LSTM result.
 
-As we expected the best performing architectures were the last two, however they didn't substantially outperform the baseline, even after tuning the hyper-parameters with Keras Tuner.
+In the initial manual phase we started with a high number of units in the first Dense layer of the last model and noticed that it was particularly susceptible to over-fitting. This problem was addressed and solved by using dropout and early stopping.
+KerasTuner then demonstrated that a better result could be obtained simply reducing the number of units in the dense layer while keeping early stopping. The optimized hyper-parameters also changed the learning rate and the activation functions, which could have an impact.
+
+Surprisingly, the last two models didn't outperform the baseline, even after tuning the hyper-parameters with Keras Tuner. The base model results the best model, with the same result of the Bi-LSTM + Two Dense model.
 
 \section{Conclusion}
 \label{sec:conclusion}
@@ -265,8 +266,8 @@ Was there anything surprising or worthwhile mentioning?
 After that, discuss the main limitations of the solution you have implemented, and indicate promising directions for future improvement.
 }
 
-Since this problem relies heavily on identifying the relationship between the elements in the string, a possible way to improve the output would be to use attention-based architectures, such as transformer-derived techniques like BERT. Recurrent architectures like LSTM and GRU are partially able to learn these patterns but attention based architectures are precisely designed to exploit these relationships.
-
+Improving the embedding mechanism will probably have a big impact. Stacking more LSTM and Dense layers on top of the baseline didn't improve the result. Since this problem relies heavily on identifying the relationship between the elements in the string, a possible way to improve the result would be to use attention-based architectures, such as Transformers. Recurrent architectures like LSTM and GRU are partially able to learn these relationships but attention based architectures are precisely designed to exploit them.
+ 
 \section{Links to external resources}
 \label{sec:links}
 \attention{THIS SECTION IS OPTIONAL}
@@ -277,8 +278,7 @@ Insert here:
     \item a link to your dataset (only for non-standard projects or project works).
 \end{itemize}
 }
-
-\begin{itemize}
+\begin{itemize}[noitemsep,nolistsep]
     \item \href{https://raw.githubusercontent.com/nltk/nltk_data/gh-pages/packages/corpora/dependency_treebank.zip}{Corpus}
     \item \href{https://en.wikipedia.org/wiki/English_punctuation}{English punctuation on Wikipedia}
     \item \href{https://universaldependencies.org/docs/en/pos/all.html#al-en-pos/PUNCT}{PUNCT POS tags on Universal Dependencies}
@@ -290,8 +290,6 @@ Insert here:
     \item \href{https://github.com/Danysan1/ai-unibo-nlp-project}{Our GitHub repository}
 \end{itemize}
 \attention{DO NOT INSERT CODE IN THIS REPORT}
-
-
 
 %\bibliography{nlpreport.bib}
 \bibliography{nlpreport, main}
