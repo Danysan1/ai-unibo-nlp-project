@@ -1,10 +1,8 @@
 # Final project
 
-[Assignment](https://touche.webis.de/semeval23/touche23-web/index.html)
-
-[Notebook](final.ipynb)
-
-Resources:
+* [Assignment](https://touche.webis.de/semeval23/touche23-web/index.html)
+* [Notebook](final.ipynb)
+* [Dataset](https://zenodo.org/record/7550385#.ZA5YCJGZND8)
 * [Identifying the Human Values behind Arguments (2022)](https://webis.de/publications.html#kiesel_2022b)
   * [Paper](research/kiesel_2022b.pdf)
   * [Slides](research/kiesel_2022b_slides.pdf)
