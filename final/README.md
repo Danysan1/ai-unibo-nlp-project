@@ -13,3 +13,4 @@
   * [Dataset](https://zenodo.org/record/6855004#.ZA5NJZHMJD8)
 * The Touché23-ValueEval Dataset for Identifying Human Values behind Arguments (2023)
   * [Paper](research/2301.13771.pdf)
+* [Submission paper template](https://www.overleaf.com/latex/templates/valueeval23-paper-template/htprfrpkkfhh)
