@@ -2,6 +2,7 @@
 
 - [Assignment 1 folder](./a1/)
 - [Assignment 2 folder](./a2/)
+- [Final project folder](./final/)
 - [Assignement info on Virtuale](https://virtuale.unibo.it/course/view.php?id=38784#section-3)
 - [Useful Material](./NLP_Course_Useful_Material.pdf)
 - [LaTeX template folder](./NLP%20project%20report%20LaTeX%20Template/)
