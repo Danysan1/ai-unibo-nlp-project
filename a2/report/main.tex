@@ -7,8 +7,8 @@
 \documentclass[11pt]{article}
 
 % Remove the "guidelines" option to generate the final version.
-\usepackage[guidelines]{nlpreport} % show guidelines
-%\usepackage[]{nlpreport} % hide guidelines
+%\usepackage[guidelines]{nlpreport} % show guidelines
+\usepackage[]{nlpreport} % hide guidelines
 
 
 % Standard package includes
@@ -24,6 +24,10 @@
 % This assumes your files are encoded as UTF8
 \usepackage[utf8]{inputenc}
 
+% For the scientific notaion
+\usepackage{siunitx}
+\sisetup{output-exponent-marker=\ensuremath{\mathrm{e}}}
+
 % This is not strictly necessary, and may be commented out,
 % but it will improve the layout of the manuscript,
 % and will typically save some space.
@@ -37,7 +41,7 @@
 \usepackage{xcolor}
 \usepackage{booktabs} % for tables
 
-
+\usepackage{enumitem}
 \usepackage{subfigure}
 
 
@@ -83,7 +87,7 @@ Master's Degree in Artificial Intelligence, University of Bologna\\
 \explanation{
 The abstract is very brief summary of your report. Try to keep it no longer than 15-20 lines at most. Write your objective, your approach, and your main observations (what are the findings that make this report worthwhile reading?)}
 
-Comparative analysis of Neural-Network based implementations of text generation: combining Transformer based architectures for history-aware question answering.
+Comparative analysis of Neural-Network based implementations of text generation: combining Transformer based architectures for history-aware generative Question-Answering.
 
 %\end{quote}
 \end{abstract}
@@ -113,17 +117,13 @@ The Introduction is an executive summary, which you can think of as an extended 
 
 \attention{HERE AND EVERYWHERE ELSE: ALWAYS KEEP IN MIND THAT, CRUCIALLY, WHATEVER TEXT/CODE/FIGURES/IDEAS/... YOU TAKE FROM ELSEWHERE MUST BE CLEARLY IDENTIFIED AND PROPERLY REFERENCED IN THE REPORT.}
 
-The goal of this assignment was to perform Part-Of-Speech tagging using neural architectures on the Dependency Treebanks corpus from NLTK.
-
-The necessary tasks included the download, pre-processing, and analysis of the corpus, the dense embedding of the words in the corpora and the comparation of the results of four Neural Network architectures choosen ahead of time:
+The goal of this assignment was to perform a Generative Question-Answering task using a Transformer-based model, with the \textbf{Co}nversational \textbf{Q}uestion \textbf{A}nswering (CoQA) dataset, that contains more than 127 thousand questions and answers taken from conversations about a given passage \cite{https://doi.org/10.48550/arxiv.1808.07042}. The given task was divided into two parts: in the first one the model had to take as input a question $Q$, a passage $P$ and had to generate the answer $A$, in the second, in addition to $Q$ and $P$, the dialogue history $H$ was given to the model.
 \begin{itemize}
-    \item Bidirectional LSTM layer + Dense layer (baseline)
-    \item Bidirectional GRU layer + Dense layer
-    \item 2x Bidirectional LSTM layer + 1x Dense layer
-    \item 1x Bidirectional LSTM layer + 2x Dense layer
+    \item[1.] $A = f_\theta(Q,P)$
+    \item[2.] $A = f_\theta(Q,P,H)$
 \end{itemize}
 
-The intended evaluation metric on the test set is F1-Macro, without considering punctuation classes. 
+Both the two tasks had to be performed fine-tuning two pre-trained models: DistilRoBERTa and BERT-Tiny.
 
 \explanation{
 \section{Background}
@@ -154,57 +154,34 @@ It is a good idea to add figures to illustrate your pipeline and/or architecture
 \end{figure*}
 }
 
-The corpus download is implemented in plain Python.
-Since the corpus files are numbered and the train-val-test split is done before the data loading by selecting a range of files, we have implemented a function (called loadCorpus) which takes in input the range of files to open and loads these as a Pandas DataFrame.
+The system runs entirely on Python. The dataset is downloaded, denormalized, saved into a DataFrame and extended with the \textit{history} column, which for each dialogue contains a concatenation of the previous dialogues of the same passage, maintaining the original order.
 
-The Exploratory Data Analysis and data pre-processing are implemented using Pandas and Matplotlib.
-%We pre-processed the data using Pandas (in particular, we implemented the function cleanCorpus to remove the punctuation classes).
+To tackle the Question-Answering task, since the answers should be generated, we implemented a Seq2Seq encoder-decoder model. The EncoderDecoderModel is initialized from a pretrained encoder checkpoint and a pretrained decoder checkpoint. Both the encoder and decoder part are initialized from an encoder-only model checkpoint, chosen between BERT-Tiny or DistilRoBERTa, \textbf{both contained in the HuggingFace library}. Before passing the input data to the model, the data is encoded by using a pretrained tokenizer, that is instantiated by the AutoTokenizer class of the HuggingFace library. The tokenizer is used to concatenate and to encode question(, history) and context strings into single arrays of tokens, which are then used to feed the encoder, and instead the answer strings are encoded separately and passed as input to the decoder. The answers are generated by leveraging as decoding strategy the beam search technique.
 
-As per instructions, the word embedding was done using the GloVe dense embedding \cite{pennington-etal-2014-glove}.
-This was implemented using the glove-wiki-gigaword-200 embedding model\textsuperscript{~\ref{sec:links}} from the gensim library \cite{rehurek_lrec} and using it inside a Tokenizer layer that was used ase the first layer in our Tensorflow neural network.
-The Out-Of-Vocabulary words were handled by adding a random embedding vector to the embedding matrix.
+The models are implemented and trained using the Pytorch framework for reproducibility and experimental reasons. In particular the Pytorch Dataset is built using the input encodings returned from the tokenizer, and then the Pytorch Dataloader is used to wrap an iterable around the Dataset to easily retrieve the data during the training process.
 
-Using Python, Numpy and Tensorflow interfaces we made sure to make our code reproducible, then we proceeded to implement the four neural network architectures with Tensorflow.
 %For the model architectures, see Figure~\ref{fig:model_architecture}.
 
-% \begin{figure*}
-%     \centering
-%     %\subfigure[]{\includegraphics[width=\columnwidth]{base_model.png}}
-%     \subfigure[]{\includegraphics[width=0.32\textwidth]{gru_model.png}}
-%     \subfigure[]{\includegraphics[width=0.32\textwidth]{x2lstm_model.png}}
-%     \subfigure[]{\includegraphics[width=0.32\textwidth]{lstm_dense_model.png}}
-%     \caption{Model architectures: (a) LSTM (b) GRU (c) 2xLSTM (d) LSTM+Dense}
-%     \label{fig:model_architecture}
-% \end{figure*}
-
-\section{Data}
-\label{sec:data}
-\attention{MAX 2 COLUMNS / 3 FOR COMBINED REPORTS. OMIT SECTION IN ASSIGNMENT REPORTS.}
-
-\explanation{Provide a brief description of your data including some statistics and pointers (references to articles/URLs) to be used to obtain the data. Describe any pre-processing work you did. Links to datasets must be placed later in Section~\ref{sec:links}.}
-
-The corpus contained training, validation and test data.
-As mentioned above, it was divided in 200 numbered files and the train-val-test split is done before the data loading by selecting a range of files.
-
-Based on the information available on punctuation\textsuperscript{~\ref{sec:links}}, we have identified these punctuation classes: \verb|``|,  \verb|’’|,  \verb|-LRB-|,  \verb|-RRB-|, 
- \verb|,|,  \verb|.|,  \verb|:|,  \verb|HYPH|,  \verb|\#|,  \verb|\$|, 
- \verb|SYM|,  \verb|''|.
-%The distribution of these classes among all classes can be observed in Figure~\ref{fig:classes_with_punct}
-The distribution of these classes among all classes can be observed in the Python notebook.
-
 \begin{table*}[!t]
-\begin{tabular}{l|l|l|l|l|l|l|l}
-\multicolumn{1}{c|}{\textbf{Architecture}} & \textbf{Units} & \textbf{Dropout} & \textbf{Activation} & \textbf{LR} & \textbf{Epochs} & \textbf{Acc.} & \multicolumn{1}{c}{\textbf{F1 Val.}} \\ \hline
-Bi-LSTM + Dense		& 32		& 0		& tanh		& 28e-4	& 9 	& 0.885	& 0.707	\\
-Bi-GRU + Dense		& 112		& 0.05	& tanh		& 64e-5	& 17	& 0.891	& 0.701	\\
-Two Bi-LSTM + Dense	& 128+112	& 0+0.2	& tanh+relu	& 14e-4	& 7		& 0.890	& 0.708	\\
-Bi-LSTM + Two Dense	& 112+64    & 0		& relu+tanh	& 12e-4	& 6		& 0.885	& 0.716
+\centering
+\begin{tabular}{l|l|l|c|c|c}
+\multicolumn{1}{c|}{\textbf{Model}} & \textbf{History} & \textbf{Seed} & \textbf{Validation loss} & \textbf{Validation F1} & \textbf{Test F1} \\ \hline
+BERT-Tiny   & no    & 42    & 3.555		& 16.582   & 17.571\\
+BERT-Tiny   & no    & 2022    & 3.550	& 16.650	& 17.162\\
+BERT-Tiny   & no    & 1377    & 3.559	& 16.330	& 17.013\\
+BERT-Tiny   & yes    & 42    & 3.569	& 15.726	& 16.4511\\
+BERT-Tiny   & yes    & 2022    & 3.553	& 15.927	& 16.819\\
+BERT-Tiny   & yes    & 1377    & 3.555	& 15.549	& 16.160\\
+DistilRoBERTa   & no    & 42    & 1.825	& 48.576	& 50.074\\
+DistilRoBERTa   & no    & 2022    & 1.880	& 48.715	& 50.355\\
+DistilRoBERTa   & no    & 1377    & 1.871	& 47.900	& 50.250\\
+DistilRoBERTa   & yes    & 42    & 1.565	& 56.382	& 58.433\\
+DistilRoBERTa   & yes    & 2022    & 1.601	& 56.206	& 58.676\\
+DistilRoBERTa   & yes    & 1377    & 1.582	& 54.847	& 57.102\\
 \end{tabular}
-\caption{Results obtained using Keras Tuner for every different architecture}
-\label{table:tuner}
+\caption{Results obtained with all the possible configurations for the two models}
+\label{table:1}
 \end{table*}
-
-
 
 \section{Experimental setup and results}
 \label{sec:results}
@@ -216,21 +193,11 @@ Describe how you set up your experiments: which architectures/configurations you
 Then, \textbf{use tables} to summarize your your findings (numerical results) in validation and test. If you don't have experience with tables in \LaTeX, you might want to use \href{https://www.tablesgenerator.com/}{\LaTeX table generator} to quickly create a table template.
 }
 
-We first experimented manually tuning the hyper-parameters for these four models.
-
-Then we calibrated the configurations for the four different architectures using 
-Keras Tuner\textsuperscript{~\ref{sec:links}}. The hyper-parameters considered and their range (min, max) were: the number of units (16, 256), the activation functions (relu, tanh), dropout (0, 0.2) and learning rate (1e-4, 1e-2), with Adam as optimizer. 
-The chosen tuner algorithm was Hyperband \cite{arxiv.1603.06560}, that allows to quickly converge on a high-performing model, comparing possible combinations through a "championship style" bracket. The algorithm used accuracy to determine the best model, training at most for 30 epochs, using the Early Stopping callback with a min. value of 15e-4 to increase the performances. 
-The results obtained and the F1-score calculated are showed in the Table \ref{table:tuner}. The F1-score is macro-averaged, calculated excluding all the punctuation classes.  
-In the end, the F1-score on the test set has been calculated, both best models had a better score compared with the validation score. 
-
-\begin{table}[!h]
-\begin{tabular}{l|l|l}
-\multicolumn{1}{c|}{\textbf{Model}}       & \textbf{F1 Val.} & \multicolumn{1}{c}{\textbf{F1 Test}} \\ \hline
-2xBi-LSTM + Dense	& 0.708		& 0.782	\\
-Bi-LSTM + 2xDense	& 0.716		& 0.793
-\end{tabular}
-\end{table}
+Both the pretrained models were fine-tuned with different configurations of \textit{seed} and \textit{dialogue history usage}, in a totally reproducible way.
+The split of the Dataset was the same for every run, and the dataset's rows were randomly shuffled to avoid getting stuck in a local minima. The encoding length used was the maximum supported by the models, while the max length of the decoder was of 64 tokens.
+The optimizer used for training is AdamW, and the allennlp implementation of the SQUAD-F1 score was used as evaluation's metric. 
+After some tests it was clear that to have the best performance on BERT-Tiny and DistilRoBERTa the learning rate was model dependent (respectively of \num{4e-4} and \num{4e-5}). The fine-tuning phase used the whole training set and lasted 3 epochs for each model, using a \textit{batch size} of 16. The sections \textit{Define Model} and \textit{Training} contain the variables that are used to set the hyperparameters to produce a specific model, these variables were changed at each run.
+The evaluation's results are described in Table \ref{table:1}.
 
 \section{Discussion}
 \label{sec:discussion}
@@ -245,13 +212,15 @@ Here you should make your analysis of the results you obtained in your experimen
 \end{itemize}
 }
 
-All the models ended up with a F1-score result on the test set around 0.8, good but not perfect.
+The difference between different seeds of the same model is negligible (always under 1\% except for DistilRoBERTa with history).
 
-Since Gated Recurrent Units are less complex than Long Short Term Memory units we weren't surprised to see that the GRU model didn't outperform the baseline LSTM model.
+The performance difference between the two models is striking: BERT-Tiny reached a disappointing maximum F1 score on the test set of 17.6 while DistilRoBERTa-base reached an acceptable 58.7. This explainable by the difference in complexity of the models (4.4M vs 82M parameters) \cite{turc2019wellread}\cite{sanh2020distilbert}.
 
-During the initial manual phase we started with a high number of units in the first Dense layer of the last model and noticed that it was particularly susceptible to over-fitting. This problem was addressed and solved by using dropout and early stopping. KerasTuner then demonstrated that a better result could be obtained simply reducing the number of units in the dense layer while keeping early stopping. The optimized hyper-parameters also changed the learning rate and the activation functions, which could have an impact.
+BERT-Tiny performed sightly better without history while DistilRoBERTa-base performed much better with the history. DistilRoBERTa's behavior was the expected one, a possible culprit for BERT-Tiny strange behavior and overall poor performance could be the inability to handle the added lexycal and semantical complexity added by the history.
 
-As we expected the best performing architectures were the last two, however they didn't substantially outperform the baseline, even after tuning the hyper-parameters with Keras Tuner.
+We analyzed the errors made by all models on various types of question and the results are visible in Figure~\ref{fig:wrong_1} and Figure~\ref{fig:wrong_2}. Besides confirming the observations made above, we can observe that the most difficult questions are those requiring the history and those with the least distribution.
+
+We realized a truncation analysis of every model which showed that inputs truncated because of the limited encoding length accounted only for 3\% of the errors. This means that even with a sliding window approach there wouldn't be much difference in the number of errors.
 
 \section{Conclusion}
 \label{sec:conclusion}
@@ -265,7 +234,7 @@ Was there anything surprising or worthwhile mentioning?
 After that, discuss the main limitations of the solution you have implemented, and indicate promising directions for future improvement.
 }
 
-Since this problem relies heavily on identifying the relationship between the elements in the string, a possible way to improve the output would be to use attention-based architectures, such as transformer-derived techniques like BERT. Recurrent architectures like LSTM and GRU are partially able to learn these patterns but attention based architectures are precisely designed to exploit these relationships.
+This problem relies heavily on identifying the semantic meaning of questions and answers and existing literature highlights the importance of model size on this kind of task, so an obvious but costly way to improve the output would be to increase the size of the model \cite{wei2022emergent}. A less naive way to improve the performance would be to use a pre-trained question answering model instead of a generic model.
 
 \section{Links to external resources}
 \label{sec:links}
@@ -277,30 +246,31 @@ Insert here:
     \item a link to your dataset (only for non-standard projects or project works).
 \end{itemize}
 }
-
-\begin{itemize}
-    \item \href{https://raw.githubusercontent.com/nltk/nltk_data/gh-pages/packages/corpora/dependency_treebank.zip}{Corpus}
-    \item \href{https://en.wikipedia.org/wiki/English_punctuation}{English punctuation on Wikipedia}
-    \item \href{https://universaldependencies.org/docs/en/pos/all.html#al-en-pos/PUNCT}{PUNCT POS tags on Universal Dependencies}
-    %\item \href{https://nlp.stanford.edu/projects/glove/}{GloVe}
-    \item \href{https://radimrehurek.com/gensim/auto_examples/index.html}{gensim library docs}
-    \item \href{https://github.com/RaRe-Technologies/gensim-data#models}{gensim available models}
-    \item \href{https://keras.io/api/keras_tuner/}{KerasTuner API - Keras}
-    \item \href{https://www.tensorflow.org/tutorials/keras/keras_tuner}{Keras Tuner - Tensorflow}
+\begin{itemize}[noitemsep,nolistsep]
+    \item \href{https://stanfordnlp.github.io/coqa/}{CoQa Dataset} \cite{https://doi.org/10.48550/arxiv.1808.07042}
     \item \href{https://github.com/Danysan1/ai-unibo-nlp-project}{Our GitHub repository}
 \end{itemize}
+
 \attention{DO NOT INSERT CODE IN THIS REPORT}
-
-
-
 %\bibliography{nlpreport.bib}
+
 \bibliography{nlpreport, main}
 
-% \begin{figure*}
-%     \centering
-%     \includegraphics[width=\textwidth]{classes_with_punctuation.png}
-%     \caption{Class distribution (including punctuation classes)}
-%     \label{fig:classes_with_punct}
-% \end{figure*}
+\appendix
+\section{Appendix}
+
+\begin{figure*}
+    \centering
+    \includegraphics[width=\textwidth]{img/worst_results_1.png}
+    \caption{Test results: percentages of wrong answers by question type}
+    \label{fig:wrong_1}
+\end{figure*}
+
+\begin{figure*}
+    \centering
+    \includegraphics[width=\textwidth]{img/worst_results_2.png}
+    \caption{Test results: percentages of wrong answers by answer or by history-dependent question type}
+    \label{fig:wrong_2}
+\end{figure*}
 
 \end{document}
