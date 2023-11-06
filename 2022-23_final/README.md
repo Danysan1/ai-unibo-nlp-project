@@ -1,0 +1,16 @@
+# Final project
+
+* [Assignment](https://touche.webis.de/semeval23/touche23-web/index.html)
+* [Notebook](final.ipynb)
+* [Dataset](https://zenodo.org/record/7550385#.ZA5YCJGZND8)
+* [Identifying the Human Values behind Arguments (2022)](https://webis.de/publications.html#kiesel_2022b)
+  * [Paper](research/kiesel_2022b.pdf)
+  * [Slides](research/kiesel_2022b_slides.pdf)
+  * Code: [local](./research/kiesel_2022b_code/), [Repository](https://github.com/webis-de/acl22-identifying-the-human-values-behind-arguments)
+    * Baseline model: [local](./research/kiesel_2022b_code/src/python/components/models/one_baseline.py), [Repository](https://github.com/webis-de/acl22-identifying-the-human-values-behind-arguments/blob/f15c11b12237c4afbe5c8648108654ce711b6220/src/python/components/models/one_baseline.py)
+    * SVM model: [local](./research/kiesel_2022b_code/src/python/components/models/svm.py), [Repository](https://github.com/webis-de/acl22-identifying-the-human-values-behind-arguments/blob/f15c11b12237c4afbe5c8648108654ce711b6220/src/python/components/models/svm.py)
+    * BERT model: [local](./research/kiesel_2022b_code/src/python/components/models/bert.py), [Repository](https://github.com/webis-de/acl22-identifying-the-human-values-behind-arguments/blob/f15c11b12237c4afbe5c8648108654ce711b6220/src/python/components/models/bert.py)
+  * [Dataset](https://zenodo.org/record/6855004#.ZA5NJZHMJD8)
+* The Touché23-ValueEval Dataset for Identifying Human Values behind Arguments (2023)
+  * [Paper](research/2301.13771.pdf)
+* [Submission paper template](https://www.overleaf.com/latex/templates/valueeval23-paper-template/htprfrpkkfhh)
