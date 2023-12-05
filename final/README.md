@@ -12,3 +12,7 @@ TODO
 * Error analysis
 * Valutare input utternce separato dal contesto
 * 5 seed diversi
+
+IDEAS
+* undersample the majority class
+* data agumentation for the minority class samples
