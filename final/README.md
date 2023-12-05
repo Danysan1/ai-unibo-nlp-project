@@ -10,6 +10,5 @@ TODO
 * Testing baseline e confronto con modello
 * Freeze modello base durante training
 * Error analysis
-* Pulizia codice da cross validation (ex. execute)
 * Valutare input utternce separato dal contesto
 * 5 seed diversi
