@@ -7,7 +7,6 @@
 
 TODO
 
-* Fix evaluate loss
 * Testing baseline e confronto con modello
 * Freeze modello base durante training
 * Error analysis
