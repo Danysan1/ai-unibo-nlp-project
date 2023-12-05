@@ -8,7 +8,6 @@
 TODO
 
 * Testing baseline e confronto con modello
-* Freeze modello base durante training
 * Error analysis
 * Valutare input utternce separato dal contesto
 * 5 seed diversi
