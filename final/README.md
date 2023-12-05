@@ -12,6 +12,10 @@ TODO
 * Valutare input utternce separato dal contesto
 * 5 seed diversi
 
+
 IDEAS
-* undersample the majority class
+
+* undersample (undersample) the majority (minority) class
 * data agumentation for the minority class samples
+* bigger update (loss) for the trigger errors
+* separate training of the two classification heads
