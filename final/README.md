@@ -7,15 +7,16 @@
 
 TODO
 
-* Testing baseline e confronto con modello
+* Stampare ROC Curve per capire la threshold migliore per il binary classifier
 * Error analysis
 * Valutare input utternce separato dal contesto
 * 5 seed diversi
+* usare il metodo evaluate al posto dei due blocchi di codice per i modelli freezed e fully finetuned
 
 
 IDEAS
 
 * undersample (undersample) the majority (minority) class
-* data agumentation for the minority class samples
-* bigger update (loss) for the trigger errors
+* data agumentation for the minority class samples - Implemented a little bit, needs more tests
+* bigger update (loss) for the trigger errors - Implemented, needs tests
 * separate training of the two classification heads
