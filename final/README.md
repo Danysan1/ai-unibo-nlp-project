@@ -8,10 +8,11 @@
 TODO
 
 * Stampare ROC Curve per capire la threshold migliore per il binary classifier
+* usare il metodo evaluate al posto dei due blocchi di codice per i modelli freezed e fully finetuned
+* applicare la threshold a test_pred_tri(\_full/\_freezed) creando un nuovo array, così si possono testare threshold diverse senza fare un'altra run 
 * Error analysis
 * Valutare input utternce separato dal contesto
 * 5 seed diversi
-* usare il metodo evaluate al posto dei due blocchi di codice per i modelli freezed e fully finetuned
 
 
 IDEAS
