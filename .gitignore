@@ -9,6 +9,7 @@ events.out.tfevents.*
 
 ### Data ###
 *.csv
+!final/results/*/*.csv
 *.dat
 *.efx
 *.gbr
