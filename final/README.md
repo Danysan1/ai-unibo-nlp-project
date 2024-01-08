@@ -13,11 +13,3 @@ TODO
 * Error analysis
 * Valutare input utternce separato dal contesto
 * 5 seed diversi
-
-
-IDEAS
-
-* undersample (undersample) the majority (minority) class
-* data agumentation for the minority class samples - Implemented a little bit, needs more tests
-* bigger update (loss) for the trigger errors - Implemented, needs tests
-* separate training of the two classification heads
