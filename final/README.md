@@ -5,11 +5,8 @@
 * [Assignment: SemEval 2024 Task 10, SUBTASK iii](https://lcs2.in/SemEval2024-EDiReF/)
 * [Dataset](https://drive.google.com/drive/folders/1YgUU9nwFr9UiJKmGbFS9ByuL5fQWp8MO)
 
-TODO
+The execution.ipynb file contains an example of execution of a single system, for a single seed. It is commented and it can be read along with the notebook to understand what has been implemented.
 
-* Stampare ROC Curve per capire la threshold migliore per il binary classifier
-* usare il metodo evaluate al posto dei due blocchi di codice per i modelli freezed e fully finetuned
-* applicare la threshold a test_pred_tri(\_full/\_freezed) creando un nuovo array, così si possono testare threshold diverse senza fare un'altra run 
-* Error analysis
-* Valutare input utternce separato dal contesto
-* 5 seed diversi
+The first cell of the notebook will explain the other contents of this directory.
+
+Authors: Daniel Bernardi, Daniele Santini, Hiari Pizzini Cavagna, Muhammad Saleem Ghulam.
